@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: openalpr
+Version: 1.0
+Summary: OpenALPR Python Bindings
+Home-page: http://www.openalpr.com/
+Author: Matt Hill
+Author-email: matthill@openalpr.com
