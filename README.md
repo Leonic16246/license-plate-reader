@@ -6,7 +6,7 @@
 - Henry Hu (20114453)
 
 ## Project Overview
-This project is a license plate detection system using a Raspberry Pi with a connected camera to capture and log license plate information in real-time. The system detects number plates, differentiates them from other objects, and stores the collected data securely.
+This project is a license plate detection system built on a **Raspberry Pi** with a connected camera to capture and log license plate information in real-time. The system detects number plates, differentiates them from other objects, and securely stores the collected data.
 
 ## User Requirements
 - **Object Detection:** The system must detect whether an object is a number plate.
@@ -34,20 +34,22 @@ This project is a license plate detection system using a Raspberry Pi with a con
 - **Hardware:** Raspberry Pi, Camera Module.
 - **Software:**
   - Raspberry Pi OS (Linux)
-  - Python with OpenCV and OpenALPR for number plate detection.
-  - SQLite for local data storage.
-  - LAMP stack for web-based data management.
-- **Multithreading:** Used in Python to capture plates and store data concurrently without blocking.
+  - Python with **OpenCV** for image processing and **YOLOv7** for number plate detection.
+  - **Roboflow** for dataset preparation.
+  - **SQLite** for local data storage.
+  - **LAMP stack** for web-based data management and access.
+- **Multithreading:** Used in Python, especially for **OCR** processes, to handle concurrent plate detection and data storage.
 
 ## How It Works
-1. The camera captures video input, processed by a Python program utilizing OpenCV and OpenALPR.
-2. Detected number plates are stored in an SQLite database.
-3. Data is managed and displayed via a LAMP stack, allowing for real-time access to captured information.
+1. The camera captures video input, processed by a Python program utilizing OpenCV and YOLOv7 for license plate detection.
+2. Detected number plates are stored in an SQLite database, with encrypted data storage for security.
+3. The LAMP stack provides a web interface to view and manage logged number plate data remotely.
+4. **Multithreading** ensures smooth operation, allowing real-time processing and logging without blocking.
 
 ## Setup Instructions
 1. Clone this repository to your Raspberry Pi.
 2. Install dependencies using `pip install -r requirements.txt`.
-3. Configure the camera and database settings in `config.py`.
+3. Configure the camera, YOLOv7 model, and database settings in `config.py`.
 4. Run `PlateReader.py` to start capturing and logging plates.
 5. Access the web interface by navigating to the Raspberry Pi's IP address in your browser.
 
