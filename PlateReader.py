@@ -2,25 +2,26 @@ import torch
 import cv2
 import easyocr  
 from models.experimental import attempt_load
-from utils.general import non_max_suppression  # Import NMS function
+from utils.general import non_max_suppression 
+import time 
 
 # Initialize the EasyOCR reader
-reader = easyocr.Reader(['en'])
+reader = easyocr.Reader(['en'], gpu=False)  # Force CPU usage
 
 device = torch.device("cpu")
 # Load your YOLOv7 model with local weights
-model = attempt_load('models/best_vrpd.pt', map_location=torch.device('cpu'))
+model = attempt_load('models/best.pt')
 model.eval()
-
-model.to(device)
 
 # Initialize the webcam capture
 cap = cv2.VideoCapture(0)
+
+# camera resolution
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-cap.set(cv2.CAP_PROP_FPS, 24)
+cap.set(cv2.CAP_PROP_FPS, 24) # camera fps
 
-frame_skip = 120  # Perform YOLO inference every th frame
+frame_skip = 96  # Perform YOLO inference every _th frame
 frame_count = 0  # Initialize a frame counter
 
 while True:
@@ -36,12 +37,16 @@ while True:
         img = img.permute(2, 0, 1).unsqueeze(0)  # Change dimension order and add batch dimension
         img /= 255.0  # Normalize the image to [0, 1] range as expected by the model
 
+        # Measure YOLO inference time
+        start_time_yolo = time.time()  # Start timer for YOLO
         # Perform inference on the selected frame
         with torch.no_grad():  # Disable gradients for inference
             pred = model(img)[0]  # Get the prediction
-
         # Apply non-max suppression to the predictions
         pred = non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45)
+        end_time_yolo = time.time()  # End timer for YOLO
+        yolo_inference_time = end_time_yolo - start_time_yolo
+        print(f"YOLO Inference Time: {yolo_inference_time:.4f} seconds")
 
         # Process predictions
         if pred[0] is not None:
@@ -52,20 +57,19 @@ while True:
                 # Extract the region of interest (the detected license plate)
                 plate_region = frame[int(y1):int(y2), int(x1):int(x2)]
 
+                # Measure EasyOCR inference time
+                start_time_easyocr = time.time()  # Start timer for EasyOCR
                 # Use EasyOCR to read the number plate
-                # Pass only the detected license plate region to EasyOCR for text recognition
                 result = reader.readtext(plate_region)
+                end_time_easyocr = time.time()  # End timer for EasyOCR
+                easyocr_inference_time = end_time_easyocr - start_time_easyocr
+                print(f"EasyOCR Inference Time: {easyocr_inference_time:.4f} seconds")
 
-                
                 # If any text was detected, print it
                 if len(result) > 0:
                     print(f"Detected Plate: {result[0][1]}")  # Print the detected text
-
         else:
             print("No predictions.")
-
-    # Display the resulting frame
-    cv2.imshow('Webcam Feed', frame)
 
     frame_count += 1  # Increment the frame counter
 
