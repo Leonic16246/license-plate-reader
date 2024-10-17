@@ -48,10 +48,11 @@ This project is a license plate detection system built on a **Raspberry Pi** wit
 
 ## Setup Instructions
 1. Clone this repository to your Raspberry Pi.
-2. Install dependencies using `pip install -r requirements.txt`.
-3. Configure the camera, YOLOv7 model, and database settings in `config.py`.
-4. Run `PlateReader.py` to start capturing and logging plates.
-5. Access the web interface by navigating to the Raspberry Pi's IP address in your browser.
+2. Install yolov7 dependencies using `pip install -r requirements.txt`.
+3. Install other depedencies such as EasyOCR, Threading, sqlite3, etc.
+4. Set up Apache for php and move plates.php to /var/www/html/.
+5. Run `python PlateReader.py` to start capturing and logging plates.
+6. Access the web interface by navigating to the Raspberry Pi's IP address in your browser.
 
 ---
 
