@@ -47,7 +47,7 @@ def save_plate_image(plate_region, plate_number):
 def insert_into_db(plate, path_to_image, confidence):
     thread_name = threading.current_thread().name
     try:
-        conn = sqlite3.connect('/home/pi64/plates.db')
+        conn = sqlite3.connect('database/plates.db')
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS plates (
