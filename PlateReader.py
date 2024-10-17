@@ -9,12 +9,12 @@ from models.experimental import attempt_load
 from utils.general import non_max_suppression
 from concurrent.futures import ThreadPoolExecutor
 
-class YOLOModel:
+class YOLOModel: # Yolo model for plate detection
     def __init__(self, model_path='runs/tiny_best.pt'):
         self.model = attempt_load(model_path)
         self.model.eval()
 
-    def inference(self, frame):
+    def inference(self, frame): # Search for plates
         thread_name = threading.current_thread().name
         print(f"[{thread_name}] YOLO: Searching for plate...")
         start_time_yolo = time.time()
@@ -26,14 +26,14 @@ class YOLOModel:
 
         with torch.no_grad():
             pred = self.model(img)[0]
-        pred = non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45)
+        pred = non_max_suppression(pred, conf_thres=0.45, iou_thres=0.60)
 
         end_time_yolo = time.time()
         print(f"[{thread_name}] YOLO Inference Time: {end_time_yolo - start_time_yolo:.4f} seconds")
         return pred
 
 
-class PlateProcessor:
+class PlateProcessor: # EasyOCR model to read detected plates
     def __init__(self, db_path='database/plates.db', save_dir='/home/pi64/plate_images/'):
         self.reader = easyocr.Reader(['en'], gpu=False)
         self.db_path = db_path
@@ -55,7 +55,7 @@ class PlateProcessor:
         else:
             print(f"[{thread_name}] No valid plate detected.")
 
-    def save_plate_image(self, plate_region, plate_number):
+    def save_plate_image(self, plate_region, plate_number): # Save plate image to local storage
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
@@ -76,7 +76,7 @@ class PlateProcessor:
                     confidence REAL,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
-            ''')
+            ''') # Creates tables if there isnt one
             cursor.execute('INSERT INTO plates (plate_number, path_to_image, confidence) VALUES (?, ?, ?)', 
                            (plate, path_to_image, confidence))
             conn.commit()
@@ -87,7 +87,7 @@ class PlateProcessor:
 
 
 class PlateReaderApp:
-    def __init__(self, yolo_model, plate_processor, frame_skip=120):
+    def __init__(self, yolo_model, plate_processor, frame_skip=120): # Interval for yolo inference
         self.yolo_model = yolo_model
         self.plate_processor = plate_processor
         self.frame_skip = frame_skip
@@ -100,7 +100,7 @@ class PlateReaderApp:
 
         frame_count = 0
 
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor: # Max no. of threads 
             while True:
                 ret, frame = cap.read()
                 if not ret:
@@ -133,7 +133,7 @@ class PlateReaderApp:
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    yolo_model = YOLOModel('model/tiny_best.pt')
+    yolo_model = YOLOModel('model/tiny_best.pt') # yolov7 model
     plate_processor = PlateProcessor()
     app = PlateReaderApp(yolo_model, plate_processor)
     app.run_camera()
