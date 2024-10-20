@@ -1,9 +1,9 @@
-# Number Plate Detection – ENSE810 Group Project
+# Licence Plate Reader – ENSE810 Group Project
 
 **Group Members:**
-- Samuel Meads (20113456)
-- Leon Lee (20125718)
-- Henry Hu (20114453)
+- Samuel Meads
+- Leon Lee
+- Henry Hu
 
 ## Project Overview
 This project is a license plate detection system built on a **Raspberry Pi** with a connected camera to capture and log license plate information in real-time. The system detects number plates, differentiates them from other objects, and securely stores the collected data.
@@ -50,9 +50,9 @@ This project is a license plate detection system built on a **Raspberry Pi** wit
 1. Clone this repository to your Raspberry Pi.
 2. Install yolov7 dependencies using `pip install -r requirements.txt`.
 3. Install other depedencies such as EasyOCR, Threading, sqlite3, etc.
-4. Set up Apache for php and move plates.php to /var/www/html/.
+4. Set up Apache for php, move and setup plates.php to /var/www/html/.
 5. Run `python PlateReader.py` to start capturing and logging plates.
-6. Access the web interface by navigating to the Raspberry Pi's IP address in your browser.
+6. Access the web interface by navigating to the Raspberry Pi's IP address in your browser `192.168.x.x/plates.php`.
 
 ---
 
